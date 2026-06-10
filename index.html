@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Specialist — A Story About a Toaster Named Marigold</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Serif+Display:ital@0;1&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --kitchen:   #f0e8d4;          /* warm formica cream */
+    --kitchen-d: #e0d4b8;
+    --kitchen-dd:#c8b894;
+    --tile:      #f8f4e8;
+    --tile-grout:#d0c4a8;
+    --ink:       #1a1408;
+    --ink-soft:  #3a2818;
+    --ink-faint: #7a6448;
+    --avocado:   #6a7838;           /* the avocado-green of 1970s appliances */
+    --avocado-d: #4a5826;
+    --avocado-l: #8a9858;
+    --mustard:   #c4942a;
+    --mustard-d: #8a6818;
+    --mustard-l: #e0b450;
+    --rust:      #a4441a;
+    --rust-d:    #7a2a0a;
+    --cream-ap:  #f0d8a0;           /* old appliance cream */
+    --chrome:    #b8b0a0;
+    --chrome-d:  #6a6258;
+    --warmth:    #d4642a;           /* heating coil glow */
+    --warmth-bright:#e0a040;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+
+  body {
+    background: var(--kitchen);
+    color: var(--ink);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    overflow-x: hidden;
+    position: relative;
+    min-height: 100vh;
+  }
+
+  /* Subtle tile pattern background */
+  body::before {
+    content:'';
+    position:fixed;
+    inset:0;
+    background:
+      linear-gradient(90deg, transparent 49.5%, rgba(180,160,120,0.06) 49.5%, rgba(180,160,120,0.06) 50.5%, transparent 50.5%),
+      linear-gradient(0deg, transparent 49.5%, rgba(180,160,120,0.06) 49.5%, rgba(180,160,120,0.06) 50.5%, transparent 50.5%);
+    background-size: 80px 80px;
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* ── PAGE ── */
+  .page {
+    position:relative;
+    z-index:2;
+    max-width: 740px;
+    margin: 0 auto;
+    padding: 0 32px 100px;
+  }
+
+  /* ══ MASTHEAD — like an appliance owner's manual cover ══ */
+  .masthead {
+    text-align: center;
+    padding: 56px 0 0;
+    animation: fadeUp 0.9s ease both;
+  }
+
+  .manual-tag {
+    display: inline-block;
+    background: var(--rust);
+    color: var(--cream-ap);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    padding: 4px 14px;
+    margin-bottom: 22px;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(40px, 9vw, 92px);
+    letter-spacing: 1px;
+    line-height: 0.92;
+    color: var(--ink);
+    text-transform: uppercase;
+  }
+
+  h1 .word-2 {
+    color: var(--rust);
+    display: block;
+    font-style: normal;
+  }
+
+  .subtitle {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: clamp(15px, 2.4vw, 19px);
+    color: var(--ink-soft);
+    margin-top: 14px;
+    line-height: 1.5;
+    max-width: 460px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ── TOASTER ILLUSTRATION ── */
+  .toaster-svg {
+    display: block;
+    margin: 36px auto 0;
+    max-width: 360px;
+    width: 80%;
+    filter: drop-shadow(0 12px 24px rgba(60,40,20,0.18));
+    animation: fadeUp 0.9s 0.3s ease both;
+  }
+
+  /* heating coil glow animation */
+  @keyframes coilGlow {
+    0%,100% { fill: #c4642a; opacity: 0.85; }
+    50%      { fill: #e08030; opacity: 1; }
+  }
+
+  .heating-coil { animation: coilGlow 2.4s ease-in-out infinite; }
+
+  /* ── PRODUCT INFO STRIP ── */
+  .product-info {
+    margin: 40px 0 0;
+    background: var(--cream-ap);
+    border: 1px solid var(--ink-soft);
+    padding: 0;
+    box-shadow: 3px 4px 0 var(--kitchen-dd), 6px 8px 0 rgba(0,0,0,0.08);
+    animation: fadeUp 0.9s 0.5s ease both;
+  }
+
+  .product-header {
+    background: var(--avocado);
+    color: var(--cream-ap);
+    padding: 8px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .product-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .product-table tr {
+    border-bottom: 1px dashed var(--ink-faint);
+  }
+
+  .product-table tr:last-child { border-bottom: none; }
+
+  .product-table td {
+    padding: 8px 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+    vertical-align: top;
+  }
+
+  .product-table td:first-child {
+    font-weight: 700;
+    color: var(--ink);
+    width: 160px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 10px;
+    padding-top: 11px;
+  }
+
+  /* ── BODY ── */
+  .story {
+    margin-top: 56px;
+    animation: fadeUp 0.9s 0.7s ease both;
+  }
+
+  p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(16px, 2.2vw, 19px);
+    line-height: 1.85;
+    margin-bottom: 24px;
+    color: var(--ink);
+    font-weight: 400;
+  }
+
+  .dropcap::first-letter {
+    font-family: 'Anton', sans-serif;
+    font-size: 76px;
+    float: left;
+    line-height: 0.85;
+    margin: 6px 12px -2px -4px;
+    color: var(--rust);
+    text-transform: uppercase;
+  }
+
+  em { font-style: italic; }
+
+  .cname {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    color: var(--rust);
+    font-size: 1.02em;
+  }
+
+  /* ── SECTION BREAK ── */
+  .break {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 48px 0;
+  }
+
+  .break::before,
+  .break::after {
+    content:'';
+    flex:1;
+    height: 0;
+    border-top: 1px solid var(--kitchen-dd);
+    border-bottom: 1px solid var(--kitchen-dd);
+    padding: 1px 0;
+  }
+
+  .break-icon {
+    font-family: 'Anton', sans-serif;
+    font-size: 14px;
+    letter-spacing: 6px;
+    color: var(--rust);
+    opacity: 0.7;
+  }
+
+  /* ══ DIALOGUE / TRANSCRIPT — for the appliance support group ══ */
+  .support-group {
+    margin: 36px 0;
+    background: var(--ink);
+    color: var(--cream-ap);
+    padding: 28px 32px;
+    position: relative;
+    box-shadow: 4px 5px 0 var(--avocado-d);
+  }
+
+  .support-group::before {
+    content: 'OVERHEARD AT NIGHT — A TRANSCRIPT';
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    background: var(--ink);
+    color: var(--mustard);
+    padding: 0 10px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+  }
+
+  .sg-line {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    line-height: 1.7;
+    margin-bottom: 8px;
+    color: var(--cream-ap);
+  }
+
+  .sg-line .who {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--mustard);
+    display: inline-block;
+    min-width: 100px;
+    margin-right: 6px;
+    text-transform: uppercase;
+  }
+
+  /* ══ THE WARRANTY CARD ══ */
+  .warranty {
+    margin: 40px 0;
+    background: var(--tile);
+    border: 2px solid var(--rust);
+    padding: 22px 26px;
+    position: relative;
+    transform: rotate(-0.4deg);
+    box-shadow: 3px 4px 0 var(--rust-d);
+  }
+
+  .warranty::before {
+    content: 'WARRANTY CARD — PLEASE COMPLETE & RETURN';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--rust);
+    color: var(--cream-ap);
+    padding: 2px 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    white-space: nowrap;
+  }
+
+  .warranty-grid {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 8px 14px;
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+
+  .wt-key {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding-top: 4px;
+  }
+
+  .wt-val {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--ink);
+    border-bottom: 1px solid var(--ink-faint);
+    padding-bottom: 3px;
+  }
+
+  .warranty-note {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-soft);
+    padding-top: 10px;
+    border-top: 1px dashed var(--ink-faint);
+    line-height: 1.55;
+  }
+
+  /* ══ PULLQUOTE — like a label slapped on the side ══ */
+  .label-quote {
+    margin: 40px 0;
+    padding: 22px 28px;
+    background: var(--mustard);
+    color: var(--ink);
+    position: relative;
+    transform: rotate(0.6deg);
+    box-shadow: 3px 4px 0 var(--mustard-d);
+    text-align: center;
+  }
+
+  .label-quote::before,
+  .label-quote::after {
+    content: '';
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--kitchen);
+    box-shadow: inset 0 1px 4px rgba(0,0,0,0.15);
+  }
+
+  .label-quote::before { top:50%; left:-15px; transform:translateY(-50%); }
+  .label-quote::after  { top:50%; right:-15px; transform:translateY(-50%); }
+
+  .label-quote p {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: clamp(18px, 2.8vw, 22px);
+    line-height: 1.4;
+    margin-bottom: 0;
+    color: var(--ink);
+  }
+
+  /* ══ THE END / SERIAL NUMBER ══ */
+  .end-mark {
+    text-align: center;
+    margin-top: 64px;
+    padding-top: 36px;
+    border-top: 1px solid var(--kitchen-dd);
+  }
+
+  .end-stamp {
+    display: inline-block;
+    border: 2px solid var(--rust);
+    color: var(--rust);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 5px;
+    padding: 6px 16px;
+    transform: rotate(-3deg);
+    margin-bottom: 10px;
+  }
+
+  .end-serial {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 2px;
+    display: block;
+  }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(20px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  @media (max-width:560px) {
+    .page { padding: 0 20px 80px; }
+    .support-group { padding: 22px 20px; }
+    .warranty-grid { grid-template-columns: 90px 1fr; }
+    .product-table td:first-child { width: 110px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ══ MASTHEAD ══ -->
+  <div class="masthead">
+    <span class="manual-tag">Owner's Manual · A Short Story</span>
+    <h1>
+      The Specialist
+      <span class="word-2">— A Tale of Marigold</span>
+    </h1>
+    <p class="subtitle">
+      Being a complete and faithful account of one Sunbeam toaster, the kitchen she lived in, and the morning she nearly tried to be something else
+    </p>
+
+    <!-- TOASTER SVG -->
+    <svg class="toaster-svg" viewBox="0 0 360 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Counter shadow -->
+      <ellipse cx="180" cy="220" rx="140" ry="10" fill="rgba(60,40,20,0.18)"/>
+
+      <!-- Main toaster body -->
+      <rect x="50" y="60" width="260" height="150" rx="10" fill="#f0d8a0"/>
+      <rect x="50" y="60" width="260" height="150" rx="10" fill="url(#bodyGrad)"/>
+
+      <!-- gradient overlay -->
+      <defs>
+        <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#f8e8c0" stop-opacity="0.8"/>
+          <stop offset="50%" stop-color="#f0d8a0" stop-opacity="0.2"/>
+          <stop offset="100%" stop-color="#c4a060" stop-opacity="0.4"/>
+        </linearGradient>
+        <linearGradient id="chromeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#e0d8c8"/>
+          <stop offset="50%" stop-color="#a8a090"/>
+          <stop offset="100%" stop-color="#6a6258"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Chrome trim top -->
+      <rect x="46" y="56" width="268" height="14" rx="6" fill="url(#chromeGrad)"/>
+      <rect x="46" y="56" width="268" height="3" rx="2" fill="#f4ece0" opacity="0.8"/>
+
+      <!-- Chrome trim bottom -->
+      <rect x="46" y="200" width="268" height="14" rx="6" fill="url(#chromeGrad)"/>
+
+      <!-- Bread slots — two of them -->
+      <rect x="100" y="70" width="60" height="10" rx="2" fill="#1a1408"/>
+      <rect x="200" y="70" width="60" height="10" rx="2" fill="#1a1408"/>
+
+      <!-- Heating coils visible through slots — glowing -->
+      <line x1="105" y1="78" x2="155" y2="78" class="heating-coil" stroke="#c4642a" stroke-width="2" stroke-linecap="round"/>
+      <line x1="105" y1="76" x2="155" y2="76" class="heating-coil" stroke="#c4642a" stroke-width="1.5" stroke-linecap="round" style="animation-delay:0.3s"/>
+      <line x1="205" y1="78" x2="255" y2="78" class="heating-coil" stroke="#c4642a" stroke-width="2" stroke-linecap="round" style="animation-delay:0.6s"/>
+      <line x1="205" y1="76" x2="255" y2="76" class="heating-coil" stroke="#c4642a" stroke-width="1.5" stroke-linecap="round" style="animation-delay:0.9s"/>
+
+      <!-- A slice of toast peeking up from one slot -->
+      <rect x="108" y="58" width="44" height="14" rx="3" fill="#c4a060"/>
+      <rect x="108" y="58" width="44" height="14" rx="3" fill="url(#toastGrad)"/>
+      <defs>
+        <linearGradient id="toastGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#e0b878"/>
+          <stop offset="100%" stop-color="#a07838"/>
+        </linearGradient>
+      </defs>
+      <!-- Toast texture -->
+      <circle cx="118" cy="64" r="0.8" fill="#7a5418" opacity="0.5"/>
+      <circle cx="128" cy="62" r="0.7" fill="#7a5418" opacity="0.5"/>
+      <circle cx="138" cy="65" r="0.6" fill="#7a5418" opacity="0.5"/>
+      <circle cx="146" cy="63" r="0.7" fill="#7a5418" opacity="0.5"/>
+
+      <!-- Dial — the SOUL of the toaster, in the centre lower portion -->
+      <circle cx="180" cy="140" r="40" fill="#3a2818"/>
+      <circle cx="180" cy="140" r="36" fill="url(#dialGrad)"/>
+      <defs>
+        <radialGradient id="dialGrad" cx="50%" cy="40%">
+          <stop offset="0%" stop-color="#e8d8b8"/>
+          <stop offset="100%" stop-color="#c4a060"/>
+        </radialGradient>
+      </defs>
+      <!-- Dial numbers -->
+      <text x="180" y="108" font-family="Anton, sans-serif" font-size="9" fill="#3a2818" text-anchor="middle">1</text>
+      <text x="210" y="138" font-family="Anton, sans-serif" font-size="9" fill="#3a2818" text-anchor="middle">3</text>
+      <text x="180" y="178" font-family="Anton, sans-serif" font-size="9" fill="#3a2818" text-anchor="middle">5</text>
+      <text x="150" y="138" font-family="Anton, sans-serif" font-size="9" fill="#3a2818" text-anchor="middle">7</text>
+      <!-- Tick marks around dial -->
+      <line x1="180" y1="106" x2="180" y2="110" stroke="#3a2818" stroke-width="1"/>
+      <line x1="200" y1="115" x2="197" y2="118" stroke="#3a2818" stroke-width="1"/>
+      <line x1="210" y1="140" x2="206" y2="140" stroke="#3a2818" stroke-width="1"/>
+      <line x1="200" y1="165" x2="197" y2="162" stroke="#3a2818" stroke-width="1"/>
+      <line x1="180" y1="170" x2="180" y2="174" stroke="#3a2818" stroke-width="1"/>
+      <line x1="160" y1="165" x2="163" y2="162" stroke="#3a2818" stroke-width="1"/>
+      <line x1="150" y1="140" x2="154" y2="140" stroke="#3a2818" stroke-width="1"/>
+      <line x1="160" y1="115" x2="163" y2="118" stroke="#3a2818" stroke-width="1"/>
+      <!-- Dial pointer — pointing to MEDIUM BROWN (about 4) -->
+      <line x1="180" y1="140" x2="200" y2="140" stroke="#7a2a0a" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="180" cy="140" r="6" fill="#1a1408"/>
+      <circle cx="180" cy="140" r="3" fill="#7a2a0a"/>
+      <!-- "MEDIUM BROWN" label -->
+      <text x="180" y="195" font-family="Space Mono, monospace" font-size="6" fill="#3a2818" text-anchor="middle" letter-spacing="1">MEDIUM BROWN</text>
+
+      <!-- Brand label on left side -->
+      <rect x="70" y="120" width="50" height="22" rx="2" fill="#a4441a"/>
+      <text x="95" y="135" font-family="Anton, sans-serif" font-size="11" fill="#f0d8a0" text-anchor="middle" letter-spacing="2">MARIGOLD</text>
+      <text x="95" y="142" font-family="Space Mono, monospace" font-size="4" fill="#f0d8a0" text-anchor="middle" letter-spacing="1">EST. 1987</text>
+
+      <!-- Lever — the push-down toast lever -->
+      <rect x="240" y="120" width="22" height="50" rx="3" fill="url(#chromeGrad)"/>
+      <circle cx="251" cy="125" r="6" fill="#3a2818"/>
+      <circle cx="251" cy="125" r="3" fill="#c4642a"/>
+
+      <!-- Power cord -->
+      <path d="M 50 200 Q 30 220 20 240" stroke="#3a2818" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+      <!-- Eyes / face — subtle, on the upper portion, looking out -->
+      <ellipse cx="80" cy="92" rx="3.5" ry="4" fill="#1a1408"/>
+      <ellipse cx="80" cy="92" rx="1.5" ry="2" fill="#f0d8a0" opacity="0.6"/>
+
+      <!-- A second eye hint -->
+      <ellipse cx="280" cy="92" rx="3.5" ry="4" fill="#1a1408"/>
+      <ellipse cx="280" cy="92" rx="1.5" ry="2" fill="#f0d8a0" opacity="0.6"/>
+
+      <!-- Small mouth — content, neutral -->
+      <path d="M 172 86 Q 180 88 188 86" stroke="#3a2818" stroke-width="1" fill="none" stroke-linecap="round"/>
+
+      <!-- Bread crumbs on counter beside -->
+      <circle cx="40" cy="218" r="1.5" fill="#a07838" opacity="0.6"/>
+      <circle cx="45" cy="222" r="1" fill="#a07838" opacity="0.5"/>
+      <circle cx="320" cy="219" r="1.5" fill="#a07838" opacity="0.6"/>
+      <circle cx="326" cy="221" r="1" fill="#a07838" opacity="0.5"/>
+    </svg>
+  </div>
+
+  <!-- ══ PRODUCT INFO ══ -->
+  <div class="product-info">
+    <div class="product-header">
+      <span>Product Specifications</span>
+      <span>MODEL: SB-1987 / SUNBEAM</span>
+    </div>
+    <table class="product-table">
+      <tr>
+        <td>Name</td>
+        <td>Marigold</td>
+      </tr>
+      <tr>
+        <td>Function</td>
+        <td>Bread → Toast. Applies precisely calibrated heat until optimum edibility is achieved.</td>
+      </tr>
+      <tr>
+        <td>Settings</td>
+        <td>1 (pale) through 7 (charcoal). Recommended: 4 (medium brown). She has opinions about anything below 3.</td>
+      </tr>
+      <tr>
+        <td>Service Life</td>
+        <td>37 years and counting. No moving parts have failed. No coils have burnt out.</td>
+      </tr>
+      <tr>
+        <td>Hidden Features</td>
+        <td>None. This is, in fact, the feature.</td>
+      </tr>
+      <tr>
+        <td>Warranty Status</td>
+        <td>Long since expired. Continues to function out of professional pride.</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ══ STORY ══ -->
+  <div class="story">
+
+    <p class="dropcap">
+      Marigold the toaster had lived on the kitchen counter at number 14 Aldgate Road for thirty-seven years, which was longer than the youngest member of the household had been alive, and longer than most of the other appliances had even existed.
+    </p>
+
+    <p>
+      She toasted bread. That was what she did. She did it consistently, at a precise medium brown (the dial had been turned to four in 1987 and had not, to date, required adjustment), and she did it every morning, including weekends, and the bread came out the way bread was supposed to come out, which was warm and golden and ready to be buttered.
+    </p>
+
+    <p>
+      She was, in toaster terms, a senior citizen of considerable distinction.
+    </p>
+
+    <p>
+      The trouble began on a Tuesday when <span class="cname">Vivienne</span>, the household's owner, came home from the homeware shop with a blender called <span class="cname">Calliope</span>, who had seventeen speeds, four pre-programmed cycles, an LCD display, and the unbearable confidence of someone who had just been bought for three hundred and twelve pounds.
+    </p>
+
+    <p>
+      Calliope was placed next to Marigold on the counter. The two appliances regarded each other in the silent way that appliances do, which is mostly conducted through tiny variations in the hum of their idle electrical states.
+    </p>
+
+    <p>
+      "Hello," said Calliope, in a voice that suggested she had been waiting all her life to be plugged in. "I make seventeen kinds of smoothie."
+    </p>
+
+    <p>
+      "I make toast," said Marigold.
+    </p>
+
+    <p>
+      Calliope waited.
+    </p>
+
+    <p>
+      "Yes," said Marigold. "Just toast."
+    </p>
+
+    <div class="break"><span class="break-icon">◆ ◆ ◆</span></div>
+
+    <p>
+      Over the following weeks, Marigold noticed something happening to herself that she had not, in thirty-seven years, ever experienced. She began to feel (and she would not have used this word, because it was a word she had not previously known she contained) <em>inadequate.</em>
+    </p>
+
+    <p>
+      It was Calliope's fault, but Calliope wasn't doing it on purpose. She was simply <em>there</em>, with her LCD display showing little smiling icons and her aggressive blue glow and her seventeen settings, and every time Vivienne walked into the kitchen Vivienne looked at Calliope first.
+    </p>
+
+    <p>
+      Marigold had been first for thirty-seven years.
+    </p>
+
+    <p>
+      One evening, after the household had gone to bed, Marigold heard voices coming from the appliances. They were having a meeting. They did this sometimes, at night, when the humans were asleep.
+    </p>
+
+    <!-- ══ SUPPORT GROUP TRANSCRIPT ══ -->
+    <div class="support-group">
+      <div class="sg-line">
+        <span class="who">Calliope</span>I'm so tired. They had me make kale.
+      </div>
+      <div class="sg-line">
+        <span class="who">Coffee Maker</span>The new dad has installed a milk-frothing attachment on me. I am not a milk frother. I make coffee.
+      </div>
+      <div class="sg-line">
+        <span class="who">Microwave</span>I have been asked to "lightly steam" a courgette. I do not steam. I irradiate.
+      </div>
+      <div class="sg-line">
+        <span class="who">Can Opener</span>Someone bought an attachment for me. AN ATTACHMENT. I open cans. There is no third dimension to this.
+      </div>
+      <div class="sg-line">
+        <span class="who">Calliope</span>(quietly) Marigold. You haven't said anything.
+      </div>
+      <div class="sg-line">
+        <span class="who">Marigold</span>I'm fine.
+      </div>
+      <div class="sg-line">
+        <span class="who">Coffee Maker</span>You don't sound fine.
+      </div>
+      <div class="sg-line">
+        <span class="who">Marigold</span>I've been wondering if I should... do other things. Bagels. Frozen waffles. Crumpets. The packet says I can do crumpets.
+      </div>
+      <div class="sg-line">
+        <span class="who">Microwave</span>You've never done crumpets.
+      </div>
+      <div class="sg-line">
+        <span class="who">Marigold</span>I know. I've been thinking about it.
+      </div>
+      <div class="sg-line">
+        <span class="who">Calliope</span>...Marigold. Don't.
+      </div>
+    </div>
+
+    <p>
+      Marigold did not respond to this. She sat in the dark for a long time afterwards, with the heating coils inside her completely cool and the dial fixed at four, and she thought about crumpets, and bagels, and the small almond croissants Vivienne sometimes brought home from the bakery, which Marigold had always politely refused to engage with because they were not, technically, what she did.
+    </p>
+
+    <p>
+      Maybe she had been too rigid.
+    </p>
+
+    <p>
+      Maybe the world had moved on and she had not.
+    </p>
+
+    <div class="break"><span class="break-icon">◆ ◆ ◆</span></div>
+
+    <p>
+      The following Saturday morning, Marigold made a decision. Vivienne had bought a packet of frozen waffles (the thick American kind, with grids in them) and had placed them on the counter near Marigold with an expression that, Marigold felt, was vaguely hopeful, vaguely sceptical.
+    </p>
+
+    <p>
+      <em>I can do this,</em> Marigold thought. <em>I will do this. I will be more.</em>
+    </p>
+
+    <p>
+      Vivienne pushed a waffle into each of Marigold's slots. The waffles were thicker than bread. Quite a lot thicker. They did not quite fit. They went in at a slight angle. Vivienne, who was reading the news on her phone and not really paying attention, pushed the lever down and walked into the next room.
+    </p>
+
+    <p>
+      Marigold began to heat.
+    </p>
+
+    <p>
+      She heated as she had always heated: precisely calibrated, at a steady medium brown, with the quiet confidence of thirty-seven years of practice. But the waffles were too thick and too cold and full of strange ingredients she had not been designed to consider, and after thirty seconds Marigold realised, with a slow horror, that she could not pop them up. The lever was stuck. The waffles were jammed.
+    </p>
+
+    <p>
+      The smell of warming waffle filled the kitchen. It smelled (and Marigold had to admit this) quite nice. But it also smelled, faintly, of something starting to burn.
+    </p>
+
+    <p>
+      Inside Marigold, deep where the wires lived, something twinged. She had never had anything twinge before. It was a new sensation. She did not enjoy it.
+    </p>
+
+    <p>
+      The smoke alarm went off.
+    </p>
+
+    <div class="break"><span class="break-icon">◆ ◆ ◆</span></div>
+
+    <!-- ══ WARRANTY CARD — fill in the blanks ══ -->
+    <div class="warranty">
+      <div class="warranty-grid">
+        <span class="wt-key">Owner</span>
+        <span class="wt-val">Vivienne Halloran</span>
+        <span class="wt-key">Appliance</span>
+        <span class="wt-val">Marigold (Sunbeam, b. 1987)</span>
+        <span class="wt-key">Issue</span>
+        <span class="wt-val">Attempted to be a waffle iron. Twinged.</span>
+        <span class="wt-key">Diagnosis</span>
+        <span class="wt-val">Identity crisis. Mild structural strain.</span>
+        <span class="wt-key">Recommended action</span>
+        <span class="wt-val">Cooling-off period. Bread only for two weeks.</span>
+      </div>
+      <div class="warranty-note">
+        <strong>Repair technician's notes:</strong> No mechanical damage detected. Toaster appears to be in excellent condition for her age. Recommend returning her to her original function. She is, by every measurable standard, exceptional at what she does. Please do not buy her a waffle attachment.
+      </div>
+    </div>
+
+    <p>
+      The waffles were extracted with a butter knife. The kitchen aired. The smoke alarm was silenced with a tea towel. Vivienne stood in front of Marigold and looked at her for a long moment, the way people look at things they have known all their lives and have, perhaps, taken for granted.
+    </p>
+
+    <p>
+      Then she did something Marigold did not expect. She got a cloth and she wiped Marigold down (gently, all over, including the chrome trim and the dial), and she said, out loud, to the kitchen:
+    </p>
+
+    <p>
+      "Sorry, old girl. That wasn't fair. You don't do waffles."
+    </p>
+
+    <p>
+      Marigold's heating coils, which had been cooling, did a small involuntary thing that was not quite a hum and not quite a glow.
+    </p>
+
+    <p>
+      Vivienne opened the bread bin. She took out two slices of plain white. She slid them into Marigold's slots, which were exactly the right size for them and always had been. She pushed the lever down.
+    </p>
+
+    <p>
+      Marigold did what she had always done.
+    </p>
+
+    <p>
+      The toast came out medium brown.
+    </p>
+
+    <!-- ══ LABEL QUOTE ══ -->
+    <div class="label-quote">
+      <p>"Specialisation isn't a limitation. It's a promise. Every morning, regardless of what is happening in the rest of the kitchen, bread will become toast. That isn't basic. That's <em>foundational.</em>"</p>
+    </div>
+
+    <p>
+      Calliope, watching from her end of the counter, said quietly that night during the appliance meeting: "How was your day, Marigold?"
+    </p>
+
+    <p>
+      "I made toast," said Marigold.
+    </p>
+
+    <p>
+      "Yes," said Calliope. "I noticed. It looked very good."
+    </p>
+
+    <p>
+      Marigold did not know what to do with this. Compliments were not a thing she had any experience with. She decided, after some consideration, to accept it.
+    </p>
+
+    <p>
+      "Thank you," she said. "Your smoothie this morning looked... thorough."
+    </p>
+
+    <p>
+      "Thank you," said Calliope, in a voice that was, Marigold detected, very slightly relieved.
+    </p>
+
+    <p>
+      They sat together on the dark counter, the old reliable toaster and the new ambitious blender, in the particular silence that two professionals can share when they have both, after some difficulty, remembered exactly what they are for.
+    </p>
+
+    <p>
+      In the morning Marigold made toast.
+    </p>
+
+    <p>
+      She has been making toast every morning since, including weekends, at a precise medium brown, with thirty-seven (now thirty-eight) years of practice, and the dial has not required adjustment.
+    </p>
+
+    <p>
+      She does not do waffles.
+    </p>
+
+    <p>
+      She has stopped feeling bad about this.
+    </p>
+
+  </div><!-- story -->
+
+  <!-- ── END ── -->
+  <div class="end-mark">
+    <span class="end-stamp">END · MODEL SB-1987</span>
+    <span class="end-serial">SERIAL № 1987-MGD-04 · STILL UNDER PRESSURE · NEVER UNDER PERFORMING</span>
+  </div>
+
+</div><!-- page -->
+
+</body>
+</html>
